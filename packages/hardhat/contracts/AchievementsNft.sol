@@ -10,9 +10,14 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 import "hardhat/console.sol";
 import {Base64} from "./libs/Base64.sol";
 
-contract AchievementsNFT is ERC721URIStorage, ReentrancyGuard, Ownable {
+contract AchievementsNFT is ERC721Enumerable, ReentrancyGuard, Ownable {
   using Counters for Counters.Counter;
   Counters.Counter private _tokenIds;
+
+  using Strings for uint256;
+
+  // Optional mapping for token URIs
+  mapping(uint256 => string) private _tokenURIs;
 
   event AchievementsNFTMinted(address sender, uint256 tokenId, string achievement);
 
@@ -48,16 +53,61 @@ contract AchievementsNFT is ERC721URIStorage, ReentrancyGuard, Ownable {
     return output;
   }
 
+  /**
+   * @dev See {IERC721Metadata-tokenURI}.
+   */
+  function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
+    _requireMinted(tokenId);
+
+    string memory _tokenURI = _tokenURIs[tokenId];
+    // string memory base = _baseURI();
+
+    string memory tokenUriSvg = getTokenURI(tokenId, _tokenURI);
+
+    console.log(tokenUriSvg, "<< uri");
+    // If there is no base URI, return the token URI.
+    // if (bytes(base).length == 0) {
+    return getTokenURI(tokenId, _tokenURI);
+    // }
+    // If both are set, concatenate the baseURI and tokenURI (via abi.encodePacked).
+    // if (bytes(_tokenURI).length > 0) {
+    //   return string(abi.encodePacked(base, tokenUriSvg));
+    // }
+
+    // return super.tokenURI(tokenId);
+  }
+
+  /**
+   * @dev Sets `_tokenURI` as the tokenURI of `tokenId`.
+   *
+   * Requirements:
+   *
+   * - `tokenId` must exist.
+   */
+  function _setTokenURI(uint256 tokenId, string memory _tokenURI) internal virtual {
+    require(_exists(tokenId), "ERC721URIStorage: URI set of nonexistent token");
+    _tokenURIs[tokenId] = _tokenURI;
+  }
+
+  /**
+   * @dev See {ERC721-_burn}. This override additionally checks to see if a
+   * token-specific URI was set for the token, and if so, it deletes the token URI from
+   * the storage mapping.
+   */
+  function _burn(uint256 tokenId) internal virtual override {
+    super._burn(tokenId);
+
+    if (bytes(_tokenURIs[tokenId]).length != 0) {
+      delete _tokenURIs[tokenId];
+    }
+  }
+
   function claim(string memory achievement) public nonReentrant {
     uint256 newItemId = _tokenIds.current();
 
     _safeMint(_msgSender(), newItemId);
 
-    string memory tokenUri = getTokenURI(newItemId, achievement);
-
-    console.log(tokenUri, "<< uri");
-
-    _setTokenURI(newItemId, tokenUri);
+    _setTokenURI(newItemId, achievement);
 
     _tokenIds.increment();
 
