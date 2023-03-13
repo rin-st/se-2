@@ -4,12 +4,16 @@ import { HareIcon } from "./assets/HareIcon";
 import { ArrowSmallRightIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 import { useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
+import { NUMBER_REGEX } from "../scaffold-eth/Contract/utilsComponents";
 
 export default function ContractInteraction() {
   const [visible, setVisible] = useState(true);
   const [newAchievement, setNewAchievement] = useState("");
+  const [achievementPoints, setAchievementPoints] = useState("");
 
-  const { writeAsync, isLoading } = useScaffoldContractWrite("AchievementsNFT", "claim", [newAchievement]);
+  const { writeAsync, isLoading } = useScaffoldContractWrite("AchievementsNFT", "claim", [
+    `${newAchievement},${achievementPoints || 10}`,
+  ]);
 
   return (
     <div className="flex bg-base-300 relative pb-10">
@@ -43,15 +47,40 @@ export default function ContractInteraction() {
         </div>
 
         <div className="flex flex-col mt-6 px-7 py-8 bg-base-200 opacity-80 rounded-2xl shadow-lg border-2 border-primary">
-          <span className="text-4xl sm:text-6xl text-black">Set an Achievement</span>
+          <span className="text-4xl text-black">Set an Achievement</span>
 
-          <div className="mt-8 flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-5">
+          <div className="mt-8 flex flex-col items-start gap-5">
             <input
               type="text"
               placeholder="Write your achievement here"
               className="input font-bai-jamjuree w-full px-5 bg-[url('/assets/gradient-bg.png')] bg-[length:100%_100%] border border-primary text-lg sm:text-2xl placeholder-white uppercase"
               onChange={e => setNewAchievement(e.target.value)}
+              value={newAchievement}
             />
+
+            <input
+              type="number"
+              placeholder="Achievement Points"
+              className="input font-bai-jamjuree w-full px-5 bg-[url('/assets/gradient-bg.png')] bg-[length:100%_100%] border border-primary text-lg sm:text-2xl placeholder-white uppercase"
+              onChange={e => {
+                if (e.target.value === "") {
+                  setAchievementPoints("");
+                  return;
+                }
+                if (!NUMBER_REGEX.test(e.target.value)) {
+                  return;
+                }
+                const newValue = Number(e.target.value);
+                if (newValue >= 100) {
+                  setAchievementPoints("100");
+                  return;
+                }
+
+                setAchievementPoints(String(newValue));
+              }}
+              value={achievementPoints}
+            />
+
             <div className="flex rounded-full border border-primary p-1 flex-shrink-0">
               <div className="flex rounded-full border-2 border-primary p-1">
                 <button

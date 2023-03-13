@@ -55,9 +55,16 @@ export default function ContractData() {
       >
         {balanceOf?.toString()}
         <br />
-        {(tokenUrisData as string[])?.map(el => (
-          <div key={el}>{el}</div>
-        ))}
+        {(tokenUrisData as string[])?.map(el => {
+          const dividerIndex = el.lastIndexOf(",");
+
+          return (
+            <div className="flex justify-between" key={el}>
+              <span>{el.slice(0, dividerIndex)}</span>
+              <span>{el.slice(dividerIndex + 1)}</span>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
