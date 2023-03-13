@@ -60,21 +60,8 @@ contract AchievementsNFT is ERC721Enumerable, ReentrancyGuard, Ownable {
     _requireMinted(tokenId);
 
     string memory _tokenURI = _tokenURIs[tokenId];
-    // string memory base = _baseURI();
 
-    string memory tokenUriSvg = getTokenURI(tokenId, _tokenURI);
-
-    console.log(tokenUriSvg, "<< uri");
-    // If there is no base URI, return the token URI.
-    // if (bytes(base).length == 0) {
     return getTokenURI(tokenId, _tokenURI);
-    // }
-    // If both are set, concatenate the baseURI and tokenURI (via abi.encodePacked).
-    // if (bytes(_tokenURI).length > 0) {
-    //   return string(abi.encodePacked(base, tokenUriSvg));
-    // }
-
-    // return super.tokenURI(tokenId);
   }
 
   /**
