@@ -92,12 +92,12 @@ const getContractWriteMethods = (
   return {
     methods: contract
       ? contractMethodsAndVariables
-          .map(fn => {
+          .map((fn, idx) => {
             const isWriteableFunction = fn.stateMutability !== "view" && fn.stateMutability !== "pure";
             if (isWriteableFunction) {
               return (
                 <WriteOnlyFunctionForm
-                  key={fn.name}
+                  key={`${fn.name}-${idx}`}
                   functionFragment={fn}
                   contractAddress={contract.address}
                   setRefreshDisplayVariables={setRefreshDisplayVariables}
