@@ -102,6 +102,10 @@ contract AchievementsNFT is ERC721Enumerable, ReentrancyGuard, Ownable {
     }
   }
 
+  function getRawAchievement(uint256 tokenId) public view returns (string memory) {
+    return _tokenURIs[tokenId];
+  }
+
   function claim(string memory achievement) public nonReentrant {
     uint256 newItemId = _tokenIds.current();
 
