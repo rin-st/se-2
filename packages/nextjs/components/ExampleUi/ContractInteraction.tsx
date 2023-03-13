@@ -7,9 +7,9 @@ import { useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
 
 export default function ContractInteraction() {
   const [visible, setVisible] = useState(true);
-  const [newGreeting, setNewGreeting] = useState("");
+  const [newAchievement, setNewAchievement] = useState("");
 
-  const { writeAsync, isLoading } = useScaffoldContractWrite("YourContract", "setGreeting", [newGreeting], "0.01");
+  const { writeAsync, isLoading } = useScaffoldContractWrite("AchievementsNFT", "claim", [newAchievement]);
 
   return (
     <div className="flex bg-base-300 relative pb-10">
@@ -43,14 +43,14 @@ export default function ContractInteraction() {
         </div>
 
         <div className="flex flex-col mt-6 px-7 py-8 bg-base-200 opacity-80 rounded-2xl shadow-lg border-2 border-primary">
-          <span className="text-4xl sm:text-6xl text-black">Set a Greeting_</span>
+          <span className="text-4xl sm:text-6xl text-black">Set an Achievement</span>
 
           <div className="mt-8 flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-5">
             <input
               type="text"
-              placeholder="Write your greeting here"
+              placeholder="Write your achievement here"
               className="input font-bai-jamjuree w-full px-5 bg-[url('/assets/gradient-bg.png')] bg-[length:100%_100%] border border-primary text-lg sm:text-2xl placeholder-white uppercase"
-              onChange={e => setNewGreeting(e.target.value)}
+              onChange={e => setNewAchievement(e.target.value)}
             />
             <div className="flex rounded-full border border-primary p-1 flex-shrink-0">
               <div className="flex rounded-full border-2 border-primary p-1">
@@ -68,11 +68,6 @@ export default function ContractInteraction() {
                 </button>
               </div>
             </div>
-          </div>
-
-          <div className="mt-4 flex gap-2 items-start">
-            <span className="text-sm leading-tight">Price:</span>
-            <div className="badge badge-warning">0.01 ETH + Gas</div>
           </div>
         </div>
       </div>
