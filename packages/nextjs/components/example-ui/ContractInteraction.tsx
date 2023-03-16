@@ -1,12 +1,12 @@
+import { useState } from "react";
 import { CopyIcon } from "./assets/CopyIcon";
 import { DiamondIcon } from "./assets/DiamondIcon";
 import { HareIcon } from "./assets/HareIcon";
 import { ArrowSmallRightIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import { useState } from "react";
 import { useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
-import { NUMBER_REGEX } from "../scaffold-eth/Contract/utilsComponents";
+import { UNSIGNED_NUMBER_REGEX } from "~~/components/scaffold-eth";
 
-export default function ContractInteraction() {
+export const ContractInteraction = () => {
   const [visible, setVisible] = useState(true);
   const [newAchievement, setNewAchievement] = useState("");
   const [achievementPoints, setAchievementPoints] = useState("");
@@ -67,7 +67,7 @@ export default function ContractInteraction() {
                   setAchievementPoints("");
                   return;
                 }
-                if (!NUMBER_REGEX.test(e.target.value)) {
+                if (!UNSIGNED_NUMBER_REGEX.test(e.target.value)) {
                   return;
                 }
                 const newValue = Number(e.target.value);
@@ -102,4 +102,4 @@ export default function ContractInteraction() {
       </div>
     </div>
   );
-}
+};

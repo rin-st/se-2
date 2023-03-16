@@ -1,9 +1,7 @@
-import { FunctionFragment } from "ethers/lib/utils";
-import { Contract, utils } from "ethers";
-import DisplayVariable from "~~/components/scaffold-eth/Contract/DisplayVariables";
-import { ReadOnlyFunctionForm } from "./ReadOnlyFunctionForm";
-import { WriteOnlyFunctionForm } from "./WriteOnlyFunctionForm";
 import { Dispatch, SetStateAction } from "react";
+import { Contract, utils } from "ethers";
+import { FunctionFragment } from "ethers/lib/utils";
+import { DisplayVariable, ReadOnlyFunctionForm, WriteOnlyFunctionForm } from "~~/components/scaffold-eth";
 
 /**
  * @param {Contract} contract
@@ -63,11 +61,17 @@ const getContractReadOnlyMethodsWithParams = (
   return {
     methods: contract
       ? contractMethodsAndVariables
-          .map(fn => {
+          .map((fn, idx) => {
             const isQueryableWithParams =
               (fn.stateMutability === "view" || fn.stateMutability === "pure") && fn.inputs.length > 0;
             if (isQueryableWithParams) {
-              return <ReadOnlyFunctionForm key={fn.name} functionFragment={fn} contractAddress={contract.address} />;
+              return (
+                <ReadOnlyFunctionForm
+                  key={`${fn.name}-${idx}`}
+                  functionFragment={fn}
+                  contractAddress={contract.address}
+                />
+              );
             }
             return null;
           })
@@ -188,11 +192,11 @@ const getParsedContractFunctionArgs = (form: Record<string, any>) => {
 };
 
 export {
-  getParsedContractFunctionArgs,
-  getContractReadOnlyMethodsWithParams,
   getAllContractFunctions,
+  getContractReadOnlyMethodsWithParams,
   getContractVariablesAndNoParamsReadMethods,
   getContractWriteMethods,
   getFunctionInputKey,
+  getParsedContractFunctionArgs,
   getParsedEthersError,
 };

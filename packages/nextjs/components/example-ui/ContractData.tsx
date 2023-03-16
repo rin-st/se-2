@@ -12,7 +12,7 @@ type AchievementsData = {
   totalAchievementPoints: number;
 };
 
-export default function ContractData() {
+export const ContractData = () => {
   const { address } = useAccount();
 
   const { data: balanceOf } = useScaffoldContractRead<BigNumber>("AchievementsNFT", "balanceOf", [address]);
@@ -104,4 +104,4 @@ export default function ContractData() {
       </div>
     </div>
   );
-}
+};
