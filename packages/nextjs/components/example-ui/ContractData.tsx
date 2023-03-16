@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import type { Abi } from "abitype";
 
 import { useDeployedContractInfo, useScaffoldContractRead } from "~~/hooks/scaffold-eth";
@@ -6,11 +6,6 @@ import { BigNumber } from "ethers";
 import { useAnimationConfig } from "~~/hooks/scaffold-eth/useAnimationConfig";
 import { useAccount, useContractReads } from "wagmi";
 import { getTargetNetwork } from "~~/utils/scaffold-eth";
-
-type AchievementsData = {
-  tokensData: { name: string; points: string }[];
-  totalAchievementPoints: number;
-};
 
 export const ContractData = () => {
   const { address } = useAccount();
@@ -20,11 +15,6 @@ export const ContractData = () => {
   const { data: deployedContractData } = useDeployedContractInfo("AchievementsNFT");
 
   const configuredChain = getTargetNetwork();
-
-  const [achievementsData, setAchievementsData] = useState<AchievementsData>({
-    tokensData: [],
-    totalAchievementPoints: 0,
-  });
 
   const tokensOfOwnerByIndexReadsData = useMemo(() => {
     return {
@@ -54,23 +44,8 @@ export const ContractData = () => {
 
   const { data: tokenUrisData } = useContractReads(tokenStringsReadsData);
 
-  useEffect(() => {
-    let totalAchievementPoints = 0;
-    const tokensData = (tokenUrisData as string[])?.reverse().map(tokenUriData => {
-      const dividerIndex = tokenUriData.lastIndexOf(",");
-      const name = tokenUriData.slice(0, dividerIndex);
-      const points = tokenUriData.slice(dividerIndex + 1);
-      totalAchievementPoints += Number(points);
-      return {
-        name,
-        points,
-      };
-    });
-
-    if (tokenUrisData?.length && achievementsData.tokensData?.length !== tokenUrisData?.length) {
-      setAchievementsData({ tokensData, totalAchievementPoints });
-    }
-  }, [achievementsData.tokensData?.length, tokenUrisData]);
+  const tokensData = tokenUrisData?.reverse() as [string, string][];
+  const totalAchievementPoints = tokensData?.reduce((acc, val) => acc + Number(val[1]), 0) || 0;
 
   const { showAnimation } = useAnimationConfig(balanceOf);
 
@@ -79,25 +54,25 @@ export const ContractData = () => {
       <div className={`flex flex-col max-w-md bg-base-200 bg-opacity-70 rounded-2xl shadow-lg px-5 py-4 w-full`}>
         <div className="flex justify-between" key="total-achievements">
           <span>Total achievements:</span>
-          <span className={`${showAnimation ? "animate-zoom" : ""}`}>{balanceOf?.toString()}</span>
+          <span className={`${showAnimation ? "animate-zoom" : ""}`}>{balanceOf?.toString() || 0}</span>
         </div>
 
         <div className="flex justify-between" key="total-points">
           <span>Total points:</span>
-          <span className={`${showAnimation ? "animate-zoom" : ""}`}>{achievementsData.totalAchievementPoints}</span>
+          <span className={`${showAnimation ? "animate-zoom" : ""}`}>{totalAchievementPoints}</span>
         </div>
       </div>
       <div className="flex flex-col gap-2 mt-2 max-w-md w-full">
-        {achievementsData.tokensData?.map(achievement => (
+        {tokensData?.map(([name, points]) => (
           <div
             className={`flex flex-col bg-base-200 bg-opacity-70 rounded-2xl shadow-lg px-5 py-4 w-full ${
               showAnimation ? "first:animate-zoom" : ""
             }`}
-            key={achievement.name}
+            key={name}
           >
-            <div className="flex justify-between" key={`${achievement.name}`}>
-              <span>{achievement.name}</span>
-              <span>{achievement.points}</span>
+            <div className="flex justify-between" key={`${name}`}>
+              <span>{name}</span>
+              <span>{points}</span>
             </div>
           </div>
         ))}

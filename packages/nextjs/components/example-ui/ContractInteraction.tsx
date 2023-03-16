@@ -12,7 +12,8 @@ export const ContractInteraction = () => {
   const [achievementPoints, setAchievementPoints] = useState("");
 
   const { writeAsync, isLoading } = useScaffoldContractWrite("AchievementsNFT", "claim", [
-    `${newAchievement},${Number(achievementPoints) || 10}`,
+    newAchievement,
+    `${Number(achievementPoints) || 10}`,
   ]);
 
   return (
