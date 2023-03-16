@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { Abi } from "abitype";
 
 import { useDeployedContractInfo, useScaffoldContractRead } from "~~/hooks/scaffold-eth";
@@ -6,6 +6,11 @@ import { BigNumber } from "ethers";
 import { useAnimationConfig } from "~~/hooks/scaffold-eth/useAnimationConfig";
 import { useAccount, useContractReads } from "wagmi";
 import { getTargetNetwork } from "~~/utils/scaffold-eth";
+
+type AchievementsData = {
+  tokensData: { name: string; points: string }[];
+  totalAchievementPoints: number;
+};
 
 export default function ContractData() {
   const { address } = useAccount();
@@ -15,6 +20,11 @@ export default function ContractData() {
   const { data: deployedContractData } = useDeployedContractInfo("AchievementsNFT");
 
   const configuredChain = getTargetNetwork();
+
+  const [achievementsData, setAchievementsData] = useState<AchievementsData>({
+    tokensData: [],
+    totalAchievementPoints: 0,
+  });
 
   const tokensOfOwnerByIndexReadsData = useMemo(() => {
     return {
@@ -44,27 +54,53 @@ export default function ContractData() {
 
   const { data: tokenUrisData } = useContractReads(tokenStringsReadsData);
 
+  useEffect(() => {
+    let totalAchievementPoints = 0;
+    const tokensData = (tokenUrisData as string[])?.reverse().map(tokenUriData => {
+      const dividerIndex = tokenUriData.lastIndexOf(",");
+      const name = tokenUriData.slice(0, dividerIndex);
+      const points = tokenUriData.slice(dividerIndex + 1);
+      totalAchievementPoints += Number(points);
+      return {
+        name,
+        points,
+      };
+    });
+
+    if (tokenUrisData?.length && achievementsData.tokensData?.length !== tokenUrisData?.length) {
+      setAchievementsData({ tokensData, totalAchievementPoints });
+    }
+  }, [achievementsData.tokensData?.length, tokenUrisData]);
+
   const { showAnimation } = useAnimationConfig(balanceOf);
 
   return (
-    <div className="flex flex-col justify-center items-center bg-[url('/assets/gradient-bg.png')] bg-[length:100%_100%] py-10 px-5 sm:px-0 lg:py-auto max-w-[100vw] ">
-      <div
-        className={`flex flex-col max-w-md bg-base-200 bg-opacity-70 rounded-2xl shadow-lg px-5 py-4 w-full ${
-          showAnimation ? "animate-zoom" : ""
-        }`}
-      >
-        {balanceOf?.toString()}
-        <br />
-        {(tokenUrisData as string[])?.map(el => {
-          const dividerIndex = el.lastIndexOf(",");
+    <div className="flex flex-col items-center bg-[url('/assets/gradient-bg.png')] bg-[length:100%_100%] py-10 px-5 sm:px-0 lg:py-auto max-w-[100vw] ">
+      <div className={`flex flex-col max-w-md bg-base-200 bg-opacity-70 rounded-2xl shadow-lg px-5 py-4 w-full`}>
+        <div className="flex justify-between" key="total-achievements">
+          <span>Total achievements:</span>
+          <span className={`${showAnimation ? "animate-zoom" : ""}`}>{balanceOf?.toString()}</span>
+        </div>
 
-          return (
-            <div className="flex justify-between" key={el}>
-              <span>{el.slice(0, dividerIndex)}</span>
-              <span>{el.slice(dividerIndex + 1)}</span>
+        <div className="flex justify-between" key="total-points">
+          <span>Total points:</span>
+          <span className={`${showAnimation ? "animate-zoom" : ""}`}>{achievementsData.totalAchievementPoints}</span>
+        </div>
+      </div>
+      <div className="flex flex-col gap-2 mt-2 max-w-md w-full">
+        {achievementsData.tokensData?.map(achievement => (
+          <div
+            className={`flex flex-col bg-base-200 bg-opacity-70 rounded-2xl shadow-lg px-5 py-4 w-full ${
+              showAnimation ? "first:animate-zoom" : ""
+            }`}
+            key={achievement.name}
+          >
+            <div className="flex justify-between" key={`${achievement.name}`}>
+              <span>{achievement.name}</span>
+              <span>{achievement.points}</span>
             </div>
-          );
-        })}
+          </div>
+        ))}
       </div>
     </div>
   );
