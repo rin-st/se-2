@@ -1,5 +1,5 @@
-import { readContracts } from "@wagmi/core";
 import { NextApiRequest, NextApiResponse } from "next";
+import { readContracts } from "wagmi";
 
 const abi = [
   {
