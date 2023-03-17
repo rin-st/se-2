@@ -31,7 +31,7 @@ contract AchievementsNFT is ERC721Enumerable, ReentrancyGuard, Ownable {
     string[5] memory parts;
     parts[
       0
-    ] = '<svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMinYMin meet" viewBox="0 0 350 350"><style>.base { fill: black; font-family: serif; font-size: 14px; }</style><rect width="100%" height="100%" fill="white" /><text x="10" y="20" class="base">Achievement:</text><text x="10" y="40" class="base">';
+    ] = '<svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMinYMin meet" viewBox="0 0 150 150"><style>.base { fill: black; font-family: serif; font-size: 14px; }</style><rect width="100%" height="100%" fill="white" /><text x="10" y="20" class="base">Achievement:</text><text x="10" y="40" class="base">';
     parts[1] = achievement;
     parts[2] = '</text><text x="10" y="60" class="base">Points: ';
     parts[3] = points;
