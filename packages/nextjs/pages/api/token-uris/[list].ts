@@ -532,7 +532,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const { list } = req.query;
 
   const tokenUriRequestData = {
-    address: "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
+    address: "0xfd66C51e08Da68a8A48901FA0d981Df462340721",
     abi,
     functionName: "tokenURI",
   };
